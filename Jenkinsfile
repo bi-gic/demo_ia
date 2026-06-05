@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(
+            name: 'DEMO_CASE',
+            choices: ['EXITOSO', 'FALLA_COLUMNAS'],
+            description: 'Selecciona el escenario de demo a ejecutar'
+        )
+    }
+
     environment {
         DEMO_PROJECT_ROOT = "${env.WORKSPACE}"
         JENKINS_VENV = '/var/jenkins_home/.venvs/demo_etl_clientes'
@@ -27,19 +35,39 @@ pipeline {
                     sh '''
                         set -e
 
+                        echo "Preparando archivo de entrada para escenario: ${DEMO_CASE}"
+
                         mkdir -p data/input data/processed data/error logs reports
 
-                        if ls data/input/clientes_*.csv 1> /dev/null 2>&1; then
-                            echo "Ya existe archivo de entrada."
-                        else
-                            echo "No existe archivo de entrada. Creando archivo demo..."
-                            cat > data/input/clientes_jenkins_demo.csv <<'CSV'
+                        echo "Limpiando archivos temporales de entrada..."
+                        rm -f data/input/clientes_*.csv
+
+                        if [ "${DEMO_CASE}" = "EXITOSO" ]; then
+                            echo "Creando archivo demo EXITOSO..."
+
+                            cat > data/input/clientes_demo_exitoso.csv <<'CSV'
 IdCliente,Documento,NombreCliente,FechaGestion,MontoDeuda,Estado
-20,70000020,Cliente GitHub Jenkins 01,2026-06-08,150.00,PENDIENTE
-21,70000021,Cliente GitHub Jenkins 02,2026-06-08,270.50,GESTIONADO
-22,70000022,Cliente GitHub Jenkins 03,2026-06-08,99.90,PENDIENTE
+30,70000030,Cliente Demo Exitoso 01,2026-06-09,150.00,PENDIENTE
+31,70000031,Cliente Demo Exitoso 02,2026-06-09,270.50,GESTIONADO
+32,70000032,Cliente Demo Exitoso 03,2026-06-09,99.90,PENDIENTE
 CSV
+
+                        elif [ "${DEMO_CASE}" = "FALLA_COLUMNAS" ]; then
+                            echo "Creando archivo demo con FALLA DE COLUMNAS..."
+
+                            cat > data/input/clientes_demo_falla_columnas.csv <<'CSV'
+IdCliente,Documento,NombreCliente,Fecha_Gestion,MontoDeuda,Estado
+40,70000040,Cliente Demo Error 01,2026-06-09,180.00,PENDIENTE
+41,70000041,Cliente Demo Error 02,2026-06-09,220.75,GESTIONADO
+CSV
+
+                        else
+                            echo "DEMO_CASE no reconocido: ${DEMO_CASE}"
+                            exit 1
                         fi
+
+                        echo "Archivo generado:"
+                        ls -la data/input
                     '''
                 }
             }
