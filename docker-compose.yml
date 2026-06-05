@@ -1,0 +1,42 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: demo_sqlserver_ia
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_PID: ${MSSQL_PID}
+    ports:
+      - "${MSSQL_PORT}:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+      - ./sql:/scripts
+    networks:
+      - demo_ia_network
+
+  jenkins:
+    build:
+      context: .
+      dockerfile: docker/jenkins/Dockerfile
+    container_name: demo_jenkins_ia
+    user: root
+    restart: unless-stopped
+    depends_on:
+      - sqlserver
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - ./:/workspace/demo_automatizacion_ia
+    networks:
+      - demo_ia_network
+
+volumes:
+  sqlserver_data:
+  jenkins_home:
+
+networks:
+  demo_ia_network:
+    driver: bridge

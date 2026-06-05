@@ -1,0 +1,74 @@
+# ==========================
+# Entornos Python
+# ==========================
+.venv/
+.venv_jenkins/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+
+# ==========================
+# Variables de entorno / secretos
+# ==========================
+.env
+*.env.local
+
+
+# ==========================
+# Logs
+# ==========================
+logs/*
+!logs/.gitkeep
+*.log
+
+
+# ==========================
+# Datos runtime
+# ==========================
+data/input/*
+!data/input/.gitkeep
+
+data/processed/*
+!data/processed/.gitkeep
+
+data/error/*
+!data/error/.gitkeep
+
+
+# ==========================
+# Reportes generados
+# ==========================
+reports/*
+!reports/.gitkeep
+
+
+# ==========================
+# Jenkins local/runtime
+# ==========================
+.jenkins/
+jenkins_home/
+
+
+# ==========================
+# Archivos operativos de datos
+# ==========================
+*.csv
+*.xls
+*.xlsx
+
+
+# ==========================
+# Archivos temporales
+# ==========================
+*.tmp
+*.bak
+*.swp
+
+
+# ==========================
+# Sistema operativo
+# ==========================
+.DS_Store
+Thumbs.db
