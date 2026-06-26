@@ -1,6 +1,29 @@
+import logging
+
 import pandas as pd
 
-from src.pipeline.config import EXPECTED_COLUMNS
+from src.pipeline.config import COLUMN_ALIASES, EXPECTED_COLUMNS
+
+
+def normalize_column_aliases(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Renombra columnas alias a sus nombres canónicos según COLUMN_ALIASES.
+    Solo actúa cuando la columna alias está presente y la canónica no lo está,
+    para no romper archivos que ya vienen correctamente formateados.
+    """
+    renames: dict[str, str] = {}
+
+    for alias, canonical in COLUMN_ALIASES.items():
+        if alias in df.columns and canonical not in df.columns:
+            renames[alias] = canonical
+            logging.warning(
+                "Columna '%s' renombrada a '%s' por alias controlado. "
+                "Verificar que el dato sea correcto.",
+                alias,
+                canonical,
+            )
+
+    return df.rename(columns=renames) if renames else df
 
 
 def validate_required_columns(df: pd.DataFrame) -> None:

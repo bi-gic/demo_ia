@@ -42,6 +42,12 @@ EXPECTED_COLUMNS = [
     "Estado",
 ]
 
+# Alias controlados: nombre recibido -> nombre canónico esperado por el pipeline.
+# Solo se aplican si la columna canónica NO está ya presente en el archivo.
+COLUMN_ALIASES: dict[str, str] = {
+    "Fecha_Gestion": "FechaGestion",
+}
+
 
 def now_lima() -> datetime:
     """

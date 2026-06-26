@@ -18,7 +18,7 @@ from src.pipeline.db import (
     finish_execution,
     insert_rejected_rows,
 )
-from src.pipeline.validate import validate_required_columns, validate_rows
+from src.pipeline.validate import normalize_column_aliases, validate_required_columns, validate_rows
 from src.pipeline.transform import transform_clientes
 from src.pipeline.load import delete_existing_clientes, insert_clientes
 
@@ -113,6 +113,8 @@ def run_pipeline() -> None:
         registros_leidos = len(df)
 
         logging.info("Registros leídos: %s", registros_leidos)
+
+        df = normalize_column_aliases(df)
 
         validate_required_columns(df)
 
